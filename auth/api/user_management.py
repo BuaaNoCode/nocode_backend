@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
+from django.views.decorators.http import require_http_methods
 
 from common.consts import StatusCode
 from common.utils import (failed_api_response, parse_data, response_wrapper,
@@ -9,6 +10,7 @@ UserModel = get_user_model()
 
 
 @response_wrapper
+@require_http_methods(["POST"])
 def create_user(request: HttpRequest):
     """create user
 

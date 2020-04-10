@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.db.models import Q
 from django.http import HttpRequest
 from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 
 from auth.models.permission_level import UserPermission
 from common.consts import Everyone, User
@@ -31,6 +32,7 @@ def generate_access_token(user_id: int, valid_hours: int = 24) -> str:
 
 
 @response_wrapper
+@require_http_methods(["POST"])
 def login(request: HttpRequest):
     """Handle requests which are to obtain jwt token
 
