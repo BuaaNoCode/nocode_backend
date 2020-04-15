@@ -62,3 +62,29 @@ def delete_user(request: HttpRequest):
     return success_api_response({"id": user.id})
 
 
+
+
+@response_wrapper
+@require_http_methods(["POST"])
+def change_password(request: HttpRequest):
+    """delete user
+
+    [route]: /auth/change_password
+
+    [method]: POST
+    """
+    user_info: dict = parse_data(request)
+    if not user_info:
+        return failed_api_response(StatusCode.BAD_REQUEST, "Bad request")
+    username = user_info.get("username")
+    password = user_info.get("password")
+    if username is None or password is None:
+        return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
+    if UserModel.objects.filter(username=username).exists():
+        return failed_api_response(StatusCode.ITEM_ALREADY_EXISTS, "Username conflicted")
+
+    user = UserModel.objects.get(username=username)
+    user.set_password(password)
+    user.save()
+
+    return success_api_response({"id": user.id})
