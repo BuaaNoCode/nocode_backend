@@ -78,13 +78,14 @@ def change_password(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "Bad request")
     username = user_info.get("username")
     password = user_info.get("password")
-    if username is None or password is None:
+    new_password = user_info.get("new_password")
+    if username is None or password is None or new_password is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
     if UserModel.objects.filter(username=username).exists():
         return failed_api_response(StatusCode.ITEM_ALREADY_EXISTS, "Username conflicted")
 
     user = UserModel.objects.get(username=username)
-    user.set_password(password)
+    user.set_password(new_password)
     user.save()
 
     return success_api_response({"id": user.id})
