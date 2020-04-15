@@ -8,6 +8,8 @@
 | ------ | ------------------------ | -------- | ------------ |
 | `POST` | [`/auth`](#post-auth)    | 用户登录 | access token |
 | `POST` | [`/auth/create`](#post-) | 用户创建 | 用户 ID      |
+| `POST` | [`/auth/delete`](#post-) | 用户删除 | 用户 ID      |
+| `POST` | [`/auth/change_password`](#post-) | 用户修改密码 | 用户 ID |
 
 ## 详细描述
 
@@ -67,3 +69,40 @@ curl -X POST \
 | 字段 |  类型   |  描述   |
 | :--: | :-----: | :-----: |
 |  id  | Integer | 用户 ID |
+
+### `POST /auth/delete`
+
+#### Request Body
+
+**必要字段**
+
+|   字段   |  类型  |   描述   |
+| :------: | :----: | :------: |
+| username | String |  用户名  |
+| password | String |   密码   |
+|  email   | String | 电邮地址 |
+
+#### Response Body
+
+| 字段 |  类型   |  描述   |
+| :--: | :-----: | :-----: |
+|  id  | Integer | 用户 ID |
+
+### `POST /auth/change_password`
+
+#### Request Body
+
+**必要字段**
+
+|     字段     |  类型  |  描述  |
+| :----------: | :----: | :----: |
+|   username   | String | 用户名 |
+|   password   | String |  密码  |
+| new_passowrd | String | 新密码 |
+
+#### Response Body
+
+| 字段 |  类型   |  描述   |
+| :--: | :-----: | :-----: |
+|  id  | Integer | 用户 ID |
+
