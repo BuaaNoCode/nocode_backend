@@ -37,11 +37,12 @@ def create_user(request: HttpRequest):
 
 
 @response_wrapper
+@auth_required
 @require_http_methods(["POST"])
-def delete_user(request: HttpRequest):
-    """delete user
+def disable_user(request: HttpRequest):
+    """disable user
 
-    [route]: /auth/delete
+    [route]: /auth/disable
 
     [method]: POST
     """
@@ -50,26 +51,30 @@ def delete_user(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "Bad request")
     username = user_info.get("username")
     password = user_info.get("password")
-    email = user_info.get("email")
-    if username is None or password is None or email is None:
+    if username is None or password is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
     if not UserModel.objects.filter(username=username).exists():
-        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "Username does not exists")
+        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "Username does not exist")
 
     user = UserModel.objects.get(username=username)
+
+    if not user.check_password(password):
+        return failed_api_response(StatusCode.INVALID_USERNAME_OR_PASSWORD, "User password is wrong")
+
     user.delete()
 
-    return success_api_response({"id": user.id})
+    return
 
 
 
 
 @response_wrapper
+@auth_required
 @require_http_methods(["POST"])
 def change_password(request: HttpRequest):
-    """delete user
+    """reset user password
 
-    [route]: /auth/change_password
+    [route]: /auth/reset_password
 
     [method]: POST
     """
@@ -81,11 +86,15 @@ def change_password(request: HttpRequest):
     new_password = user_info.get("new_password")
     if username is None or password is None or new_password is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
-    if UserModel.objects.filter(username=username).exists():
-        return failed_api_response(StatusCode.ITEM_ALREADY_EXISTS, "Username conflicted")
+    if not UserModel.objects.filter(username=username).exists():
+        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "Username does not exist")
 
     user = UserModel.objects.get(username=username)
+
+    if not user.check_password(password):
+        return failed_api_response(StatusCode.INVALID_USERNAME_OR_PASSWORD, "User password is wrong")
+
     user.set_password(new_password)
     user.save()
 
-    return success_api_response({"id": user.id})
+    return
