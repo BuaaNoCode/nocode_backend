@@ -161,3 +161,4 @@ requests.post(url, files=files)
 ### `DELETE /ocr/project/<int:project_id>/<int:result_id>`
 
 删除识别结果
+
