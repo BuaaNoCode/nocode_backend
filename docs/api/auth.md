@@ -4,12 +4,12 @@
 
 以下表格列出了与用户认证相关的 API：
 
-| 方法   | 路径                     | 描述     | Response     |
-| ------ | ------------------------ | -------- | ------------ |
-| `POST` | [`/auth`](#post-auth)    | 用户登录 | access token |
-| `POST` | [`/auth/create`](#post-) | 用户创建 | 用户 ID      |
-| `POST` | [`/auth/disable`](#post-) | 用户删除 | 空      |
-| `POST` | [`/auth/reset_password`](#post-) | 用户修改密码 | 空 |
+| 方法   | 路径                                 | 描述         | Response     |
+| ------ | ------------------------------------ | ------------ | ------------ |
+| `POST` | [`/auth`](#post-auth)                | 用户登录     | access token |
+| `POST` | [`/auth/create`](#post-authcreate)   | 用户创建     | 用户 ID      |
+| `POST` | [`/auth/disable`](#post-authdisable) | 用户删除     | 空           |
+| `POST` | [`/auth/reset`](#post-authreset)     | 用户修改密码 | 空           |
 
 ## 详细描述
 
@@ -76,12 +76,12 @@ curl -X POST \
 
 **必要字段**
 
-|   字段   |  类型  |   描述   |
-| :------: | :----: | :------: |
-| username | String |  用户名  |
-| password | String |   密码   |
+|   字段   |  类型  |  描述  |
+| :------: | :----: | :----: |
+| username | String | 用户名 |
+| password | String |  密码  |
 
-### `POST /auth/reset_password`
+### `POST /auth/reset`
 
 #### Request Body
 
@@ -91,4 +91,4 @@ curl -X POST \
 | :----------: | :----: | :----: |
 |   username   | String | 用户名 |
 |   password   | String |  密码  |
-| new_passowrd | String | 新密码 |
+| new_password | String | 新密码 |
