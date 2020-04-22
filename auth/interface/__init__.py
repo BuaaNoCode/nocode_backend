@@ -1,0 +1,1 @@
+from auth.api.auth import auth_required

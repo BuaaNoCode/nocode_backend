@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
-from common.consts import StatusCode
+from auth.api.auth import auth_required
+from common.consts import StatusCode, User
 from common.utils import (failed_api_response, parse_data, response_wrapper,
                           success_api_response)
 
@@ -37,7 +38,7 @@ def create_user(request: HttpRequest):
 
 
 @response_wrapper
-@auth_required
+@auth_required(User)
 @require_http_methods(["POST"])
 def disable_user(request: HttpRequest):
     """disable user
@@ -54,7 +55,7 @@ def disable_user(request: HttpRequest):
     if username is None or password is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
     if not UserModel.objects.filter(username=username).exists():
-        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "Username does not exist")
+        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "User does not exist")
 
     user = UserModel.objects.get(username=username)
 
@@ -63,15 +64,15 @@ def disable_user(request: HttpRequest):
 
     user.delete()
 
-    return
+    return success_api_response({"result":"Ok, user has been diabled."})
 
 
 
 
 @response_wrapper
-@auth_required
+@auth_required(User)
 @require_http_methods(["POST"])
-def change_password(request: HttpRequest):
+def reset_password(request: HttpRequest):
     """reset user password
 
     [route]: /auth/reset_password
@@ -87,7 +88,7 @@ def change_password(request: HttpRequest):
     if username is None or password is None or new_password is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
     if not UserModel.objects.filter(username=username).exists():
-        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "Username does not exist")
+        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "User does not exist")
 
     user = UserModel.objects.get(username=username)
 
@@ -97,4 +98,4 @@ def change_password(request: HttpRequest):
     user.set_password(new_password)
     user.save()
 
-    return
+    return success_api_response({"result":"Ok, password has been updated."})
