@@ -1,0 +1,1 @@
+from user_manager.api.auth import auth_required

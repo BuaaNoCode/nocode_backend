@@ -8,7 +8,7 @@ from django.http import HttpRequest
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from auth.models.permission_level import UserPermission
+from user_manager.models.permission_level import UserPermission
 from common.consts import Everyone, User
 from common.utils import (StatusCode, failed_api_response, response_wrapper,
                           success_api_response)

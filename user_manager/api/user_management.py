@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
-from auth.api.auth import auth_required
+from user_manager.api.auth import auth_required
 from common.consts import StatusCode, User
 from common.utils import (failed_api_response, parse_data, response_wrapper,
                           success_api_response)
