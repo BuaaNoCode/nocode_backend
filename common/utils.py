@@ -21,6 +21,18 @@ def response_wrapper(func):
 
     return inner
 
+def validate_data(fields: list):
+    def decorator(func):
+        def inner(request, *args, **kwargs):
+            data: dict = parse_data(request)
+            if data is None or not isinstance(data, dict):
+                return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT)
+            if not data.keys() <= fields:
+                return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT)
+            kwargs["data"] = data
+            return func(request, *args, **kwargs)
+        return inner
+    return decorator
 
 def api_response(success, data) -> dict:
     return {"success": success, "data": data}
@@ -51,3 +63,10 @@ def parse_data(request: HttpRequest):
         return json.loads(request.body.decode())
     except json.JSONDecodeError:
         return None
+
+def wrapped_api(api_dict: dict):
+    api_dict = {k.upper(): v for k, v in api_dict.items()}
+
+    def api(request, *args, **kwargs):
+        return api_dict[request.method](request, *args, **kwargs)
+    return api

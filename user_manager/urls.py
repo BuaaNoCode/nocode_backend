@@ -1,9 +1,11 @@
 from django.urls import path
-from user_manager.api.auth import login
-from user_manager.api.user_management import create_user, disable_user, reset_password
+
+from .api import (LOGIN_API, USER_CREATE_API, USER_DISABLE_API,
+                              USER_RESET_API)
+
 urlpatterns = [
-    path("", login),
-    path("create", create_user),
-    path("disable", disable_user),
-    path("reset", reset_password)
+    path("", LOGIN_API),
+    path("create", USER_CREATE_API),
+    path("disable", USER_DISABLE_API),
+    path("reset", USER_RESET_API)
 ]

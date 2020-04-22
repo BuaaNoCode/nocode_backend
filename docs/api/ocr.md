@@ -69,6 +69,7 @@ projects 字段元素内容
 
 |    字段    |   类型   |     描述     |
 | :--------: | :------: | :----------: |
+|     id     | Integer  |   项目 ID    |
 |    name    |  String  |    项目名    |
 |  comment   |  String  |   项目描述   |
 | created_at | DateTime |   创建时间   |
@@ -92,6 +93,7 @@ results 字段元素内容
 
 |    字段    |   类型   |     描述     |
 | :--------: | :------: | :----------: |
+|     id     | Integer  | 识别结果 ID  |
 |    name    |  String  |  识别结果名  |
 |  comment   |  String  | 识别结果描述 |
 | created_at | DateTime |   创建时间   |
@@ -143,11 +145,12 @@ requests.post(url, files=files)
 
 #### Response Body
 
-|  字段   |  类型  |     描述     |
-| :-----: | :----: | :----------: |
-|  name   | String |  识别结果名  |
-| comment | String | 识别结果描述 |
-| result  |  JSON  |   识别结果   |
+|  字段   |  类型   |     描述     |
+| :-----: | :-----: | :----------: |
+|   id    | Integer | 识别结果 ID  |
+|  name   | String  |  识别结果名  |
+| comment | String  | 识别结果描述 |
+| result  |  JSON   |   识别结果   |
 
 ### `PUT /ocr/project/<int:project_id>/<int:result_id>`
 

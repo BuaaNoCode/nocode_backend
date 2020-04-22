@@ -36,7 +36,6 @@ def create_user(request: HttpRequest):
     return success_api_response({"id": new_user.id})
 
 
-
 @response_wrapper
 @auth_required(User)
 @require_http_methods(["POST"])
@@ -64,9 +63,7 @@ def disable_user(request: HttpRequest):
 
     user.delete()
 
-    return success_api_response({"result":"Ok, user has been diabled."})
-
-
+    return success_api_response({"result": "Ok, user has been diabled."})
 
 
 @response_wrapper
@@ -75,7 +72,7 @@ def disable_user(request: HttpRequest):
 def reset_password(request: HttpRequest):
     """reset user password
 
-    [route]: /auth/reset_password
+    [route]: /auth/reset
 
     [method]: POST
     """
@@ -98,4 +95,4 @@ def reset_password(request: HttpRequest):
     user.set_password(new_password)
     user.save()
 
-    return success_api_response({"result":"Ok, password has been updated."})
+    return success_api_response({"result": "Ok, password has been updated."})
