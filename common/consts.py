@@ -1,3 +1,5 @@
+from enum import Enum
+
 # Permission Levels
 Everyone = 0
 User = 1
