@@ -34,7 +34,7 @@
 
 ```bash
 curl -X POST \
-    http://127.0.0.1:8000/auth \
+    http://127.0.0.1:8000/auth/ \
     -F username=test \
     -F password=test
 ```
