@@ -81,6 +81,15 @@ curl --header "Content-Type: application/json" \
 | username | String | 用户名 |
 | password | String |  密码  |
 
+#### 请求示例
+
+```bash
+curl --header "Content-Type: application/json" \
+-H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE1ODgwNjYwNTIsImlhdCI6MTU4Nzk3OTY1MiwidHlwZSI6ImFjY2Vzc190b2tlbiJ9.XTUzaKgtalNsZHARfv3GzDmLyg4QaW3bbcmLHtUfeso" \
+--request POST   --data '{"username":"test","password":"new_password"}' \
+http://127.0.0.1:8000/auth/disable
+```
+
 ### `POST /auth/reset`
 
 #### Request Body

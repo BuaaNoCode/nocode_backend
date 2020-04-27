@@ -3,3 +3,4 @@ coverage==5.0.4
 psycopg2
 requests
 pyjwt
+django-nose==1.4.6
