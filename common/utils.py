@@ -27,7 +27,7 @@ def validate_data(fields: list):
             data: dict = parse_data(request)
             if data is None or not isinstance(data, dict):
                 return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT)
-            if not data.keys() <= fields:
+            if not set(data.keys()) <= set(fields):  
                 return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT)
             kwargs["data"] = data
             return func(request, *args, **kwargs)

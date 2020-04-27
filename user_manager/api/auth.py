@@ -56,6 +56,7 @@ def verify_jwt_token(request: HttpRequest) -> (bool, StatusCode, str, int):
     status: StatusCode = StatusCode.SUCCESS
     header: str = request.META.get("HTTP_AUTHORIZATION")
     try:
+        print(header)
         if header is None:
             raise jwt.InvalidTokenError
 
