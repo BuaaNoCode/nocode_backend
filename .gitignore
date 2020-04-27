@@ -125,5 +125,6 @@ dmypy.json
 
 # REST Client Test Case
 *.http
+*.idea
 
 # End of https://www.gitignore.io/api/django
