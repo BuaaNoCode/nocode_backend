@@ -30,6 +30,15 @@
 | username | String | 用户名 |
 | password | String |  密码  |
 
+#### 请求示例
+
+```bash
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"username":"test","password":"test"}' \
+  http://127.0.0.1:8000/auth/
+```
+
 #### Response Body
 
 |     字段     |  类型  |   描述    |
