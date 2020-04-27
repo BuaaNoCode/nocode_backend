@@ -6,14 +6,14 @@
 
 | 方法   | 路径                                 | 描述         | Response     |
 | ------ | ------------------------------------ | ------------ | ------------ |
-| `POST` | [`/auth/`](#post-auth)                | 用户登录     | access token |
+| `POST` | [`/auth/`](#post-auth)               | 用户登录     | access token |
 | `POST` | [`/auth/create`](#post-authcreate)   | 用户创建     | 用户 ID      |
 | `POST` | [`/auth/disable`](#post-authdisable) | 用户删除     | 空           |
 | `POST` | [`/auth/reset`](#post-authreset)     | 用户修改密码 | 空           |
 
 ## 详细描述
 
-### `POST /auth`
+### `POST /auth/`
 
 使用用户名和密码进行登录，后端生成`access_token`。
 
@@ -29,15 +29,6 @@
 | :------: | :----: | :----: |
 | username | String | 用户名 |
 | password | String |  密码  |
-
-#### 请求示例
-
-```bash
-curl --header "Content-Type: application/json" \
-  --request POST \
-  --data '{"username":"test","password":"test"}' \
-  http://127.0.0.1:8000/auth/
-```
 
 #### Response Body
 

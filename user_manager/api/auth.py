@@ -1,5 +1,4 @@
 from datetime import timedelta
-import json
 
 import jwt
 from django.conf import settings
@@ -9,10 +8,10 @@ from django.http import HttpRequest
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from user_manager.models.permission_level import UserPermission
 from common.consts import Everyone, User
-from common.utils import (StatusCode, failed_api_response, response_wrapper,
-                          success_api_response)
+from common.utils import (StatusCode, failed_api_response, parse_data,
+                          response_wrapper, success_api_response)
+from user_manager.models.permission_level import UserPermission
 
 UserModel = get_user_model()
 
@@ -37,15 +36,16 @@ def generate_access_token(user_id: int, valid_hours: int = 24) -> str:
 def login(request: HttpRequest):
     """Handle requests which are to obtain jwt token
 
-    [route]: /auth
+    [route]: /auth/
 
     [method]: POST
     """
-    data = json.loads(request.body.decode())
-    user = authenticate(username=data['username']
-        , password=data['password'])
+    data: dict = parse_data()
+    if not data or data.get("username") is None or data.get("password"):
+        return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad login info")
+    user = authenticate(username=data["username"], password=data["password"])
     if not user:
-        return failed_api_response(StatusCode.INVALID_USERNAME_OR_PASSWORD, "Login required")
+        return failed_api_response(StatusCode.INVALID_USERNAME_OR_PASSWORD, "The username or password is incorrect")
     return success_api_response({
         "access_token": generate_access_token(user.id)
     })
