@@ -6,7 +6,7 @@
 
 | 方法   | 路径                                 | 描述         | Response     |
 | ------ | ------------------------------------ | ------------ | ------------ |
-| `POST` | [`/auth`](#post-auth)                | 用户登录     | access token |
+| `POST` | [`/auth/`](#post-auth)                | 用户登录     | access token |
 | `POST` | [`/auth/create`](#post-authcreate)   | 用户创建     | 用户 ID      |
 | `POST` | [`/auth/disable`](#post-authdisable) | 用户删除     | 空           |
 | `POST` | [`/auth/reset`](#post-authreset)     | 用户修改密码 | 空           |
@@ -33,10 +33,10 @@
 #### 请求示例
 
 ```bash
-curl -X POST \
-    http://127.0.0.1:8000/auth \
-    -F username=test \
-    -F password=test
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"username":"test","password":"test"}' \
+  http://127.0.0.1:8000/auth/
 ```
 
 #### Response Body

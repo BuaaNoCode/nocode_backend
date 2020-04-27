@@ -1,4 +1,5 @@
 from datetime import timedelta
+import json
 
 import jwt
 from django.conf import settings
@@ -40,8 +41,9 @@ def login(request: HttpRequest):
 
     [method]: POST
     """
-    user = authenticate(username=request.POST.get(
-        "username"), password=request.POST.get("password"))
+    data = json.loads(request.body.decode())
+    user = authenticate(username=data['username']
+        , password=data['password'])
     if not user:
         return failed_api_response(StatusCode.INVALID_USERNAME_OR_PASSWORD, "Login required")
     return success_api_response({

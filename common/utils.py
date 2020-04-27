@@ -59,7 +59,10 @@ def success_api_response(data) -> dict:
     return api_response(True, data)
 
 def parse_data(request: HttpRequest):
-    return request.POST
+    try:
+        return json.loads(request.body.decode())
+    except json.JSONDecodeError:
+        return None
     
 
 def wrapped_api(api_dict: dict):
