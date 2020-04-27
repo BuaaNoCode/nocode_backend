@@ -63,6 +63,7 @@ def parse_data(request: HttpRequest):
         return json.loads(request.body.decode())
     except json.JSONDecodeError:
         return None
+    
 
 def wrapped_api(api_dict: dict):
     api_dict = {k.upper(): v for k, v in api_dict.items()}
