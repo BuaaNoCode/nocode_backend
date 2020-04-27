@@ -33,7 +33,7 @@ def receieve_ocr_photo(request: HttpRequest, project_id: int):
         id=project_id).filter(belong_to=user).first()
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
-
+    
     # TODO:: fetch something from request and pass them to ocr_handler
 
 

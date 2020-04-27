@@ -19,6 +19,7 @@ def create_user(request: HttpRequest):
 
     [method]: POST
     """
+    print(request)
     user_info: dict = parse_data(request)
     if not user_info:
         return failed_api_response(StatusCode.BAD_REQUEST, "Bad request")

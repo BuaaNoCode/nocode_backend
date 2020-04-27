@@ -20,16 +20,26 @@ def create_project(request: HttpRequest, **kwargs):
 
     [method]: POST
     """
-    name = kwargs.get("name")
-    comment = kwargs.get("comment")
+    # name = kwargs.get("name")
+    # comment = kwargs.get("comment")
+    name = request.POST.get("name")
+    comment = request.POST.get("comment")
+
     if len(name) == 0:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Project name is required")
 
-    project: Project = Project.objects.create({
-        "name": name,
-        "comment": comment,
-        "belong_to": request.user
-    })
+    # project: Project = Project.objects.create({
+    #     "name": name,
+    #     "comment": comment,
+    #     "belong_to": request.user
+    # })
+    project: Project = Project(
+        name = name,
+        comment = comment,
+        belong_to = request.user
+    )
+
+    project.save()
 
     return success_api_response({
         "id": project.id,
