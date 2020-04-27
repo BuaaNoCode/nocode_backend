@@ -40,8 +40,9 @@ def login(request: HttpRequest):
 
     [method]: POST
     """
-    data: dict = parse_data()
-    if not data or data.get("username") is None or data.get("password"):
+    print(request.body)
+    data: dict = parse_data(request)
+    if not data or data.get("username") is None or data.get("password") is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad login info")
     user = authenticate(username=data["username"], password=data["password"])
     if not user:
