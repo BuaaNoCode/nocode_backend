@@ -26,11 +26,10 @@ def receieve_ocr_photo(request: HttpRequest, project_id: int):
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
     
-    # TODO:: fetch something from request and pass them to ocr_handler
     json_text = request.FILES.get("json", None)
     load = json.load(json_text)
-    rname = load["name"]
-    rcomment = load["comment"]
+    rname = load.get("name")
+    rcomment = load.get("comment")
     img_file = request.FILES.get("file", None)
 
     result_json = ocr_handler(img_file)

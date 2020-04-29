@@ -6,7 +6,7 @@ from requests import get, post
 def analyse_form(source,model_id,file_type):
 # Endpoint URL
     endpoint = r"https://nocode-form-2.cognitiveservices.azure.com/"
-    apim_key = "d7596252a6f94d778db5897122013465"
+    apim_key = "your key"
     model_id = model_id
     post_url = endpoint + "/formrecognizer/v2.0-preview/custom/models/%s/analyze" % model_id
     source = source
@@ -25,12 +25,9 @@ def analyse_form(source,model_id,file_type):
     try:
         resp = post(url = post_url, data = data_bytes, headers = headers, params = params)
         if resp.status_code != 202:
-            print("POST analyze failed:\n%s" % json.dumps(resp.json()))
             quit()
-        print("POST analyze succeeded:\n%s" % resp.headers)
         get_url = resp.headers["operation-location"]
     except Exception as e:
-        print("POST analyze failed:\n%s" % str(e))
         quit()
     n_tries = 15
     n_try = 0
@@ -41,15 +38,12 @@ def analyse_form(source,model_id,file_type):
             resp = get(url = get_url, headers = {"Ocp-Apim-Subscription-Key": apim_key})
             resp_json = resp.json()
             if resp.status_code != 200:
-                print("GET analyze results failed:\n%s" % json.dumps(resp_json))
                 quit()
             status = resp_json["status"]
             if status == "succeeded":
-                print("Analysis succeeded:\n%s" % json.dumps(resp_json))
                 return resp_json
                 quit()
             if status == "failed":
-                print("Analysis failed:\n%s" % json.dumps(resp_json))
                 quit()
             # Analysis still running. Wait and retry.
             time.sleep(wait_sec)
