@@ -18,7 +18,7 @@ def ocr_train(source,useLabelFile,content_type,prefix,includeSubFolders):
     headers = {
         # Request headers
         'Content-Type': content_type,
-        'Ocp-Apim-Subscription-Key': 'd7596252a6f94d778db5897122013465',#<subscription key>创建表单识别器资源时的订阅密钥。
+        'Ocp-Apim-Subscription-Key': 'your key',#<subscription key>创建表单识别器资源时的订阅密钥。
     }
 
     body = 	{

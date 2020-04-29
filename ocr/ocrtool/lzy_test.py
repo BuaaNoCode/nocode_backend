@@ -1,7 +1,7 @@
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 
 def form_recognizer():
-    apim_key = "d7596252a6f94d778db5897122013465"
+    apim_key = "your key"
     headers = {
         # Request headers
         'Content-Type': 'application/json',
