@@ -1,17 +1,26 @@
+from enum import Enum
+
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
 from common.consts import VIP, User
-from common.utils import (StatusCode, failed_api_response, response_wrapper,
-                          success_api_response, validate_data)
+from common.utils import (StatusCode, api_record, failed_api_response,
+                          response_wrapper, success_api_response,
+                          validate_data)
+from ocr.models.ocr_api_record import OCRApiRecord
 from ocr.models.project import Project
 from ocr.models.recognition_result import RecognitionResult
 from user_manager.interface import auth_required
 
 
+class ApiIndex(Enum):
+    RECEIEVE_OCR_PHOTO = 1
+
+
 @response_wrapper
 @require_http_methods(["POST"])
 @auth_required(VIP)
+@api_record(model=OCRApiRecord, api=ApiIndex.RECEIEVE_OCR_PHOTO, user=True)
 def receieve_ocr_photo(request: HttpRequest, project_id: int):
     """receieve ocr photo and invoke ocr handler
 

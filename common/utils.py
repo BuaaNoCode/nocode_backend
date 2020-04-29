@@ -1,6 +1,7 @@
 import json
 from enum import Enum
 
+from django.db.models import Model
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_http_methods
 
@@ -71,3 +72,27 @@ def wrapped_api(api_dict: dict):
     def api(request, *args, **kwargs):
         return api_dict[request.method](request, *args, **kwargs)
     return api
+
+def api_record(model: Model, api, user: bool):
+    def decorator(func):
+        def inner(request, *args, **kwargs):
+            if user:
+                record = model.objects.get_or_create(api=api.value, user=request.user)
+            else:
+                record = model.objects.get_or_create(api=api.value)
+            record.count = record.count + 1
+            record.save()
+            return func(request, *args, **kwargs)
+        return inner
+    return decorator
+
+def dump_api_record(model: Model, ApiIndex: Enum):
+    result = {}
+    for api in ApiIndex:
+        records = model.objects.filter(api=api.value)
+        result[api.value] = {
+            "num": len(records),
+            "detail":list(records.values("count", "user"))
+        }
+    return result
+    
