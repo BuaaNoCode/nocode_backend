@@ -35,11 +35,11 @@ def receieve_ocr_photo(request: HttpRequest, project_id: int):
         id=project_id).filter(belong_to=user).first()
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
-    json_text = request.POST.get("json")
-    img_file = request.FILES.get("file")
+    json_text = request.POST.get("json", None)
+    img_file = request.FILES.get("file", None)
     print(json_text)
     print(img_file)
-    load = json.load(json_text)
+    load = json.loads(json_text)
     rname = load.get("name")
     rcomment = load.get("comment")
     result_json = ocr_handler(img_file)
@@ -86,6 +86,7 @@ def retrieve_ocr_result(request: HttpRequest, project_id: int, result_id: int):
 
     res_data = {
         "id": result.id,
+        "name": result.name,
         "comment": result.comment,
         "result": result.result
     }

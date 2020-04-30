@@ -24,43 +24,55 @@ class ProjectTestCase(TestCase):
         self.c.post('/ocr/project', {'name': 'project1', 'comment': 'comment1'},
                     content_type="application/json")
 
-    def test_receieve_ocr_photo(self):
-        project = Project.objects.first()
-
-        file = 'C:\\Users\\Administrator\\Desktop\\OCR\\nocode_backend\ocr\\tests\\form.png'
+        # set files
+        file = './ocr/tests/form.png'
         payload = {'name': 'result1', 'comment': 'resultcomment1'}
-        files = {
-            "json": (None, json.dumps(payload), "application/json"),
+        self.files = {
+            "json": json.dumps(payload),
             "file": (os.path.basename(file), open(file, "rb"), "image/png")
         }
-        print(files)
-        response = self.c.post('/ocr/project/' + str(1), files=files)
+
+    def test_receieve_ocr_photo(self):
+        project = Project.objects.first()
+        response = self.c.post('/ocr/project/' + str(project.id), self.files)
         data = json.loads(response.content.decode())
-        result = project.recognitionresult_set.filter(id=data.get('id'))
+        result = project.recognitionresult_set.get(id=data.get('id'))
         self.assertEqual(result.name, 'result1')
         self.assertEqual(result.comment, 'resultcomment1')
+        print(result.result)
 
     def test_retrieve_ocr_result(self):
-        project = Project.objects.filter(belong_to=self.c).first()
-        result = project.recognitionresult_set.all().first()
-        response = self.c.get('/ocr/project/'+project.id+'/'+result.id, {}, content_type="application/json")
+        # upload photo
+        project = Project.objects.first()
+        self.c.post('/ocr/project/' + str(project.id), self.files)
+
+        result = project.recognitionresult_set.first()
+        response = self.c.get('/ocr/project/'+str(project.id)+'/'+str(result.id), {}, content_type="application/json")
         data = json.loads(response.content.decode())
+
         self.assertEqual(data['id'], result.id)
         self.assertEqual(data['name'], result.name)
         self.assertEqual(data['comment'], result.comment)
         self.assertEqual(data['result'], result.result)
 
     def test_update_ocr_result(self):
-        project = Project.objects.filter(belong_to=self.c).first()
+        # upload photo
+        project = Project.objects.first()
+        self.c.post('/ocr/project/' + str(project.id), self.files)
+
         result = project.recognitionresult_set.all().first()
-        self.c.put('/ocr/project/'+project.id+'/'+result.id, {'name': 'result2', 'comment': 'resultcomment2'},
+        self.c.put('/ocr/project/'+str(project.id)+'/'+str(result.id), {'name': 'result2', 'comment': 'resultcomment2'},
                    content_type="application/json")
-        result = RecognitionResult.objects.filter(id=result.id)
+        result = RecognitionResult.objects.get(belong_to=project, id=result.id)
         self.assertEqual(result.name, 'result2')
         self.assertEqual(result.comment, 'resultcomment2')
 
     def test_remove_ocr_result(self):
-        project = Project.objects.filter(belong_to=self.c).first()
+        # upload photo
+        project = Project.objects.first()
+        self.c.post('/ocr/project/' + str(project.id), self.files)
+
         result = project.recognitionresult_set.all().first()
-        self.c.delete('/ocr/project/'+project.id+'/'+result.id, {}, content_type="application/json")
+        self.assertEqual(RecognitionResult.objects.count(), 1)
+        self.c.delete('/ocr/project/'+str(project.id)+'/'+str(result.id), {}, content_type="application/json")
         self.assertEqual(RecognitionResult.objects.count(), 0)
