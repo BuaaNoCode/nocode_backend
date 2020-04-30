@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OCR App</title>
+    <script async="async" defer="defer" src="https://buttons.github.io/buttons.js"></script>
+    <style>
+
+    html,
+    body {
+        margin: 0;
+        width: 100%;
+    }
+
+    h1,
+    h2,
+    p,
+    i,
+    a,
+    .first-letter,
+    .authorName a {
+        color: rgba(0, 0, 0, 0.84);
+        text-rendering: optimizeLegibility;
+    }
+
+    h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 48px;
+        text-align: left;
+        margin-bottom: 8px;
+    }
+
+    h2 {
+        font-family: "Lato", sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        padding: 0;
+        margin: 56px 0 -13px -1.883px;
+        text-align: left;
+        line-height: 34.5px;
+        letter-spacing: -0.45px;
+    }
+
+    p,
+    i,
+    a {
+        margin-top: 21px;
+        font-family: "Lora";
+        font-size: 21px;
+        letter-spacing: -0.03px;
+        line-height: 1.58;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+
+    blockquote {
+        font-family: "Playfair Display", serif;
+        font-size: 30px;
+        font-style: italic;
+        letter-spacing: -0.36px;
+        line-height: 44.4px;
+        overflow-wrap: break-word;
+        margin: 55px 0 33px 0;
+        /* text-align: center; */
+        color: rgba(0, 0, 0, 0.68);
+        padding: 0 0 0 50px;
+    }
+
+    code {
+        font-size: 18px;
+        background: rgba(0, 0, 0, .05);
+        border-radius: 2px;
+        padding: 3px 5px;
+    }
+
+    .highlighted {
+        background: #7DFFB3;
+    }
+
+    .first-letter {
+        overflow-wrap: break-word;
+        font-family: "Playfair Display", serif;
+        font-size: 60px;
+        line-height: 60px;
+        display: block;
+        position: relative;
+        float: left;
+        margin: 0px 7px 0 -5px;
+    }
+
+    .subtitle {
+        font-family: "Lato", sans-serif;
+        color: rgba(0, 0, 0, 0.54);
+        margin: 0 0 24px 0;
+    }
+
+    /* ##################################################################################
+########################################  LAYOUT  ###################################
+##################################################################################### */
+
+    .container {
+        display: -ms-grid;
+        display: grid;
+        -ms-grid-columns: auto 166px 740px 166px auto;
+        grid-template-columns: auto 166px 740px 166px auto;
+        -ms-grid-rows: 450px auto 150px;
+        grid-template-rows: 450px auto 150px;
+        grid-template-areas:
+            ". img img img ."
+            ". . article . ."
+            ". . footer . .";
+    }
+
+    .meta {
+        -ms-grid-row: 1;
+        -ms-grid-column: 2;
+        -ms-grid-column-span: 3;
+        grid-area: img;
+        margin: 10px;
+
+        display: -ms-grid;
+
+        display: grid;
+        -ms-grid-rows: auto;
+        grid-template-rows: auto;
+        -ms-grid-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "info image";
+    }
+
+    .image {
+        -ms-grid-row: 1;
+        -ms-grid-column: 2;
+        grid-area: image;
+        background: url("https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=ec073341402b36bb155e3bcb77eea9cd&dpr=1&auto=format&fit=crop&w=1000&q=80&cs=tinysrgb");
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    .info {
+        -ms-grid-row: 1;
+        -ms-grid-column: 1;
+        grid-area: info;
+        padding: 60px 60px 0 0;
+        margin-bottom: 30px;
+    }
+
+    .author {
+        display: -ms-grid;
+        display: grid;
+        -ms-grid-columns: 60px auto;
+        grid-template-columns: 60px auto;
+        -ms-grid-rows: 60px;
+        grid-template-rows: 60px;
+        grid-template-areas:
+            "authorImage authorInfo";
+        margin-bottom: 10px;
+    }
+
+    .authorImage {
+        -ms-grid-row: 1;
+        -ms-grid-column: 1;
+        grid-area: authorImage;
+        border: 2px solid #7DFFB3;
+        border-radius: 50%;
+        background: url('https://raw.githubusercontent.com/BuaaNoCode/nocode_backend/yekaihui--improve-user-admin/logo.png');
+        background-size: cover;
+    }
+
+    .authorInfo {
+        -ms-grid-row: 1;
+        -ms-grid-column: 2;
+        grid-area: authorInfo;
+        padding-left: 10px;
+    }
+
+    .authorName,
+    .authorSub {
+        font-family: "Lato", sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        margin-top: 6px;
+    }
+
+    .authorName a {
+        font-size: inherit;
+        font-family: inherit;
+        text-decoration: none;
+    }
+
+    .authorName a:hover {
+        text-decoration: underline;
+    }
+
+    .authorSub {
+        color: rgba(0, 0, 0, 0.54);
+    }
+
+    .median-divider {
+        padding: 0 6px;
+    }
+
+    .lineLength {
+        border: 2px dashed rgba(0, 0, 0, 0.54);
+    }
+
+    .article {
+        -ms-grid-row: 2;
+        -ms-grid-column: 3;
+        grid-area: article;
+        margin: 40px 10px;
+    }
+
+    .footer {
+        -ms-grid-row: 3;
+        -ms-grid-column: 3;
+        grid-area: footer;
+        background: #333333;
+    }
+
+    @media screen and (max-width: 1072px) {
+        .container {
+            -ms-grid-columns: auto 740px auto;
+            grid-template-columns: auto 740px auto;
+            grid-template-areas:
+                ". img ."
+                ". article ."
+                ". footer  .";
+        }
+
+        .meta {
+            -ms-grid-row: 1;
+            -ms-grid-column: 2;
+            -ms-grid-column-span: 1;
+        }
+
+        .article {
+            -ms-grid-row: 2;
+            -ms-grid-column: 2;
+        }
+
+        .footer {
+            -ms-grid-row: 3;
+            -ms-grid-column: 2;
+        }
+    }
+
+    @media screen and (max-width: 740px) {
+        .container {
+            -ms-grid-rows: auto auto 150px;
+            grid-template-rows: auto auto 150px;
+            -ms-grid-columns: auto;
+            grid-template-columns: auto;
+            grid-template-areas:
+                "img"
+                "article"
+                "footer";
+        }
+
+        .meta {
+            -ms-grid-rows: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            -ms-grid-columns: 1fr;
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "info"
+                "image";
+        }
+
+        .info {
+            padding-top: 0;
+        }
+
+        .meta {
+            -ms-grid-row: 1;
+            -ms-grid-column: 1;
+            -ms-grid-column-span: 1;
+        }
+
+        .image {
+            -ms-grid-row: 2;
+            -ms-grid-column: 1;
+        }
+
+        .info {
+            -ms-grid-row: 1;
+            -ms-grid-column: 1;
+        }
+
+        .article {
+            -ms-grid-row: 2;
+            -ms-grid-column: 1;
+        }
+
+        .footer {
+            -ms-grid-row: 3;
+            -ms-grid-column: 1;
+        }
+    }
+
+    table {
+        padding: 0;
+        word-break: initial;
+    }
+
+    table tr {
+        border-top: 1px solid #dfe2e5;
+        margin: 0;
+        padding: 0;
+    }
+
+    table tr:nth-child(2n),
+    thead {
+        background-color: #f8f8f8;
+    }
+
+    table tr th {
+        font-weight: bold;
+        border: 1px solid #dfe2e5;
+        border-bottom: 0;
+        margin: 0;
+        padding: 6px 13px;
+    }
+
+    table tr td {
+        border: 1px solid #dfe2e5;
+        margin: 0;
+        padding: 6px 13px;
+    }
+
+    table tr th:first-child,
+    table tr td:first-child {
+        margin-top: 0;
+    }
+
+    table tr th:last-child,
+    table tr td:last-child {
+        margin-bottom: 0;
+    }
+
+    code {
+        font-family: monospace, monospace;
+        display: block;
+        padding: 1rem;
+        word-wrap: normal;
+        overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+    <script async="async" defer="defer" src="https://buttons.github.io/buttons.js"></script>
+    <div class="container">
+        <div class="meta">
+            <div class="image"></div>
+            <div class="info">
+                <h1>NoCode OCR</h1>
+                <p class="subtitle">`OCR App build by BuaaNoCode`</p>
+                <div class="author">
+                    <div class="authorImage"></div>
+                    <div class="authorInfo">
+                        <div class="authorName"><a href="https://github.com/BuaaNoCode">BuaaNoCode</a></div>
+                        <div class="authorSub">Apr 29 <span class="median-divider">·</span> 5 min read</div>
+                    </div>
+                </div><a class="github-button git" href="https://github.com/BuaaNoCode/nocode_backend" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star lucagez/medium.css on GitHub">Star</a>
+            </div>
+        </div>
+        <main class="article">
+            <h1 id="auth-api">auth 模块 API</h1>
+            <h2 id="-">总览</h2>
+            <p>以下表格列出了与用户认证相关的 API：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>方法</th>
+                        <th>路径</th>
+                        <th>描述</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>POST</code></td>
+                        <td><a href="#post-auth"><code>/auth/</code></a></td>
+                        <td>用户登录</td>
+                        <td>access token</td>
+                    </tr>
+                    <tr>
+                        <td><code>POST</code></td>
+                        <td><a href="#post-authcreate"><code>/auth/create</code></a></td>
+                        <td>用户创建</td>
+                        <td>用户 ID</td>
+                    </tr>
+                    <tr>
+                        <td><code>POST</code></td>
+                        <td><a href="#post-authdisable"><code>/auth/disable</code></a></td>
+                        <td>用户删除</td>
+                        <td>空</td>
+                    </tr>
+                    <tr>
+                        <td><code>POST</code></td>
+                        <td><a href="#post-authreset"><code>/auth/reset</code></a></td>
+                        <td>用户修改密码</td>
+                        <td>空</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 id="-">详细描述</h2>
+            <h3 id="-post-auth-"><code>POST /auth/</code></h3>
+            <p>使用用户名和密码进行登录，后端生成<code>access_token</code>。</p>
+            <p>后续请求需要带上<code>access_token</code>用于鉴权。</p>
+            <p>如果鉴权得到<code>access_token</code>过期的错误信息，将需要重新登录获取新的<code>access_token</code>。</p>
+            <h4 id="request-body">Request Body</h4>
+            <p><strong>必要字段</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">username</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">用户名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">password</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">密码</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4 id="-">请求示例</h4>
+            <pre><code class="lang-bash">curl --<span class="hljs-built_in">header</span> <span class="hljs-string">"Content-Type: application/json"</span> \
+  --request POST \
+  --data '{<span class="hljs-string">"username"</span>:<span class="hljs-string">"test"</span>,<span class="hljs-string">"password"</span>:<span class="hljs-string">"test"</span>}' \
+  http:<span class="hljs-comment">//127.0.0.1:8000/auth/</span>
+</code></pre>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">access_token</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">JWT Token</td>
+                    </tr>
+                </tbody>
+            </table>
+            <pre><code class="lang-json"><span class="hljs-comment">// Example</span>
+{
+  <span class="hljs-string">"access_token"</span>: <span class="hljs-string">"aaa.bbb.ccc"</span>
+}
+</code></pre>
+            <h3 id="-post-auth-create-"><code>POST /auth/create</code></h3>
+            <h4 id="request-body">Request Body</h4>
+            <p><strong>必要字段</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">username</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">用户名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">password</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">密码</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">email</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">电邮地址</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">id</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">用户 ID</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-post-auth-disable-"><code>POST /auth/disable</code></h3>
+            <h4 id="request-body">Request Body</h4>
+            <p><strong>必要字段</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">username</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">用户名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">password</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">密码</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4 id="-">请求示例</h4>
+            <pre><code class="lang-bash">curl --<span class="hljs-built_in">header</span> <span class="hljs-string">"Content-Type: application/json"</span> \
+-H <span class="hljs-string">"Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE1ODgwNjYwNTIsImlhdCI6MTU4Nzk3OTY1MiwidHlwZSI6ImFjY2Vzc190b2tlbiJ9.XTUzaKgtalNsZHARfv3GzDmLyg4QaW3bbcmLHtUfeso"</span> \
+--request POST   --data '{<span class="hljs-string">"username"</span>:<span class="hljs-string">"test"</span>,<span class="hljs-string">"password"</span>:<span class="hljs-string">"new_password"</span>}' \
+http:<span class="hljs-comment">//127.0.0.1:8000/auth/disable</span>
+</code></pre>
+            <h3 id="-post-auth-reset-"><code>POST /auth/reset</code></h3>
+            <h4 id="request-body">Request Body</h4>
+            <p><strong>必要字段</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">username</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">用户名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">password</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">密码</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">new_password</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">新密码</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h1 id="ocr-api">ocr 模块 API</h1>
+            <h2 id="-">总览</h2>
+            <p>以下表格列出了与 OCR 识别相关的 API：</p>
+            <h3 id="project">project</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>方法</th>
+                        <th>路径</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>POST</code></td>
+                        <td><a href="#post-ocrproject"><code>/ocr/project</code></a></td>
+                        <td>创建项目</td>
+                    </tr>
+                    <tr>
+                        <td><code>PUT</code></td>
+                        <td><a href="#put-ocrprojectintprojectid"><code>/ocr/project/&lt;int:project_id&gt;</code></a></td>
+                        <td>修改项目信息</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET</code></td>
+                        <td><a href="#get-ocrproject"><code>/ocr/project</code></a></td>
+                        <td>获取所有项目信息</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET</code></td>
+                        <td><a href="#get-ocrprojectintprojectid"><code>/ocr/project/&lt;int:project_id&gt;</code></a></td>
+                        <td>获取项目详细信息</td>
+                    </tr>
+                    <tr>
+                        <td><code>DELETE</code></td>
+                        <td><a href="#delete-ocrprojectintprojectid"><code>/ocr/project/&lt;int:project_id&gt;</code></a></td>
+                        <td>删除项目</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="recognition_result">recognition_result</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>方法</th>
+                        <th>路径</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>POST</code></td>
+                        <td><a href="#post-ocrprojectintprojectid"><code>/ocr/project/&lt;int:project_id&gt;</code></a></td>
+                        <td>上传待识别图片</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET</code></td>
+                        <td><a href="#get-ocrprojectintprojectidintresultid"><code>/ocr/project/&lt;int:project_id&gt;/&lt;int:result_id&gt;</code></a></td>
+                        <td>获取识别结果</td>
+                    </tr>
+                    <tr>
+                        <td><code>PUT</code></td>
+                        <td><a href="#put-ocrprojectintprojectidintresultid"><code>/ocr/project/&lt;int:project_id&gt;/&lt;int:result_id&gt;</code></a></td>
+                        <td>修改识别结果信息</td>
+                    </tr>
+                    <tr>
+                        <td><code>DELETE</code></td>
+                        <td><a href="#delete-ocrprojectintprojectidintresultid"><code>/ocr/project/&lt;int:project_id&gt;/&lt;int:result_id&gt;</code></a></td>
+                        <td>删除识别结果</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 id="-">详细描述</h2>
+            <h3 id="-post-ocr-project-"><code>POST /ocr/project</code></h3>
+            <p>创建项目</p>
+            <h4 id="request-body">Request Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">项目名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，项目描述</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">id</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">项目 ID</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">created_at</td>
+                        <td style="text-align:center">DateTime</td>
+                        <td style="text-align:center">项目创建时间</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-put-ocr-project-int-project_id-"><code>PUT /ocr/project/&lt;int:project_id&gt;</code></h3>
+            <p>修改项目信息</p>
+            <h4 id="request-body">Request Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，项目名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，项目描述</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-get-ocr-project-"><code>GET /ocr/project</code></h3>
+            <p>获取该用户所有项目信息</p>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">projects</td>
+                        <td style="text-align:center">Array</td>
+                        <td style="text-align:center">所有项目信息</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">project_num</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">项目总数</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>projects 字段元素内容</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">id</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">项目 ID</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">项目名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">项目描述</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">created_at</td>
+                        <td style="text-align:center">DateTime</td>
+                        <td style="text-align:center">创建时间</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">result_num</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">识别结果总数</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-get-ocr-project-int-project_id-"><code>GET /ocr/project/&lt;int:project_id&gt;</code></h3>
+            <p>获取项目详细信息</p>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">项目名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">项目描述</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">created_at</td>
+                        <td style="text-align:center">DateTime</td>
+                        <td style="text-align:center">创建时间</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">result_num</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">识别结果总数</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">results</td>
+                        <td style="text-align:center">Array</td>
+                        <td style="text-align:center">所有识别结果</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>results 字段元素内容</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">id</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">识别结果 ID</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">识别结果名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">识别结果描述</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">created_at</td>
+                        <td style="text-align:center">DateTime</td>
+                        <td style="text-align:center">创建时间</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-delete-ocr-project-int-project_id-"><code>DELETE /ocr/project/&lt;int:project_id&gt;</code></h3>
+            <p>删除项目</p>
+            <h3 id="-post-ocr-project-int-project_id-"><code>POST /ocr/project/&lt;int:project_id&gt;</code></h3>
+            <p>上传待识别图片</p>
+            <h4 id="request-body-json-part-">Request Body(JSON part)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，识别结果名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，识别结果描述</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>可能的发包方法</p>
+            <pre><code class="lang-python"><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">import</span> requests
+
+payload = {
+    <span class="hljs-string">"name"</span>: <span class="hljs-string">"test"</span>,
+    <span class="hljs-string">"comment"</span>: <span class="hljs-string">"test comment"</span>
+}
+
+files = {
+    <span class="hljs-string">"json"</span>: (None, json.dumps(payload), <span class="hljs-string">"application/json"</span>),
+    <span class="hljs-string">"file"</span>: (os.path.basename(file), open(file, <span class="hljs-string">"rb"</span>), <span class="hljs-string">"image/png"</span>)
+}
+
+requests.post(url, files=files)
+</code></pre>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">id</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">识别结果 ID</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">created_at</td>
+                        <td style="text-align:center">DateTime</td>
+                        <td style="text-align:center">创建时间</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-get-ocr-project-int-project_id-int-result_id-"><code>GET /ocr/project/&lt;int:project_id&gt;/&lt;int:result_id&gt;</code></h3>
+            <p>获取识别结果</p>
+            <h4 id="response-body">Response Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">id</td>
+                        <td style="text-align:center">Integer</td>
+                        <td style="text-align:center">识别结果 ID</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">识别结果名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">识别结果描述</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">result</td>
+                        <td style="text-align:center">JSON</td>
+                        <td style="text-align:center">识别结果</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-put-ocr-project-int-project_id-int-result_id-"><code>PUT /ocr/project/&lt;int:project_id&gt;/&lt;int:result_id&gt;</code></h3>
+            <p>修改识别结果信息</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:center">字段</th>
+                        <th style="text-align:center">类型</th>
+                        <th style="text-align:center">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">name</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，识别结果名</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">comment</td>
+                        <td style="text-align:center">String</td>
+                        <td style="text-align:center">可选，识别结果描述</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="-delete-ocr-project-int-project_id-int-result_id-"><code>DELETE /ocr/project/&lt;int:project_id&gt;/&lt;int:result_id&gt;</code></h3>
+            <p>删除识别结果</p>
+        </main>
+    </div>
+</body>
+
+</html>

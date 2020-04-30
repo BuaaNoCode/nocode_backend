@@ -62,7 +62,8 @@ def disable_user(request: HttpRequest):
     if not user.check_password(password):
         return failed_api_response(StatusCode.INVALID_USERNAME_OR_PASSWORD, "User password is wrong")
 
-    user.delete()
+    user.is_active = False
+    user.save()
 
     return success_api_response({"result": "Ok, user has been diabled."})
 
