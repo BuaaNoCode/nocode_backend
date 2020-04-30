@@ -6,7 +6,7 @@ from requests import get, post
 def form_recognizer_layout(source, files, content_type):
     # Endpoint URL
     endpoint = r" https://nocode-form-2.cognitiveservices.azure.com"
-    apim_key = "your key"
+    apim_key = "d7596252a6f94d778db5897122013465"
     post_url = endpoint + "/formrecognizer/v2.0-preview/Layout/analyze"
     headers = {
         # Request headers
@@ -46,9 +46,8 @@ def form_recognizer_layout(source, files, content_type):
             return json.loads(('{"error":{"code":"GETUnkownError", "message":"' + str(e) + '"}}'))
     return json.loads(('{"error":{"code":"GETTimeLimitExceeded", "message":"may try later"}}'))
 
-'''
-r = form_recognizer_layout(
-    r"C:\Users\Administrator\Desktop\OCR\OCR_doc\sample_data\Test\Invoice_6.pdf",
-    'image/jpeg'
-    )
-'''
+
+# r = form_recognizer_layout(
+#     r"C:\Users\Administrator\Desktop\OCR\OCR_doc\sample_data\Test\Invoice_6.pdf",
+#     'image/jpeg'
+#     )

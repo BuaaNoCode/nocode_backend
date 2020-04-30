@@ -20,17 +20,19 @@ def create_project(request: HttpRequest, **kwargs):
 
     [method]: POST
     """
-    name = kwargs.get("name")
-    comment = kwargs.get("comment")
+    info: dict = parse_data(request)
+    name = info.get("name")
+    comment = info.get("comment")
 
     if len(name) == 0:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Project name is required")
 
-    project: Project = Project.objects.create({
-        "name": name,
-        "comment": comment,
-        "belong_to": request.user
-    })
+    project: Project = Project(
+        name = name,
+        comment = comment,
+        belong_to = request.user
+    )
+    project.save()
 
     return success_api_response({
         "id": project.id,
@@ -98,7 +100,7 @@ def retrieve_project_detail(request: HttpRequest, project_id: int):
         id=project_id).filter(belong_to=user).first()
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
-    results = project.recognitionresult
+    results = project.recognitionresult_set.all()
     res_data = {
         "name": project.name,
         "comment": project.comment,

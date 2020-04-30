@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
@@ -20,8 +21,8 @@ class ApiIndex(Enum):
 
 @response_wrapper
 @require_http_methods(["POST"])
-@auth_required(VIP)
-@api_record(model=OCRApiRecord, api=ApiIndex.RECEIEVE_OCR_PHOTO, user=True)
+@auth_required(User)
+# @api_record(model=OCRApiRecord, api=ApiIndex.RECEIEVE_OCR_PHOTO, user=True)
 def receieve_ocr_photo(request: HttpRequest, project_id: int):
     """receieve ocr photo and invoke ocr handler
 
@@ -34,13 +35,13 @@ def receieve_ocr_photo(request: HttpRequest, project_id: int):
         id=project_id).filter(belong_to=user).first()
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
-    
-    json_text = request.FILES.get("json", None)
+    json_text = request.POST.get("json")
+    img_file = request.FILES.get("file")
+    print(json_text)
+    print(img_file)
     load = json.load(json_text)
     rname = load.get("name")
     rcomment = load.get("comment")
-    img_file = request.FILES.get("file", None)
-
     result_json = ocr_handler(img_file)
     result: RecognitionResult = RecognitionResult(
         name = rname,
@@ -49,7 +50,6 @@ def receieve_ocr_photo(request: HttpRequest, project_id: int):
         result = result_json
     )
     result.save()
-
     res_data = {
         "id": result.id,
         "created_at": result.created_at
@@ -79,7 +79,7 @@ def retrieve_ocr_result(request: HttpRequest, project_id: int, result_id: int):
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
 
-    result: RecognitionResult = project.recognitionresult.filter(
+    result: RecognitionResult = project.recognitionresult_set.filter(
         id=result_id).first()
     if not result:
         return failed_api_response(StatusCode.ITEM_NOT_FOUND)
@@ -109,7 +109,7 @@ def update_ocr_result(request: HttpRequest, project_id: int, result_id: int, **k
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
 
-    result: RecognitionResult = project.recognitionresult.filter(
+    result: RecognitionResult = project.recognitionresult_set.filter(
         id=result_id).first()
     if not result:
         return failed_api_response(StatusCode.ITEM_NOT_FOUND)
@@ -137,7 +137,7 @@ def remove_ocr_result(request: HttpRequest, project_id: int, result_id: int):
     if not project:
         return failed_api_response(StatusCode.REFUSE_ACCESS)
 
-    result: RecognitionResult = project.recognitionresult.filter(
+    result: RecognitionResult = project.recognitionresult_set.filter(
         id=result_id).first()
     if not result:
         return failed_api_response(StatusCode.ITEM_NOT_FOUND)
