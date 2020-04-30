@@ -6,7 +6,6 @@ from ocr.models.project import Project
 from ocr.models.recognition_result import RecognitionResult
 from django.contrib.auth.models import User
 from django.db.models import Count
-from django.contrib.postgres.fields import JSONField
 
 class ProjectTestCase(TestCase):
     def setUp(self):
@@ -48,9 +47,12 @@ class ProjectTestCase(TestCase):
 
         response = self.c.get('/ocr/project', {}, content_type="application/json")
         data = json.loads(response.content.decode())
-        projects = Project.objects.filter(belong_to=self.user).annotate(
-            results_num=Count("recognitionresult"))
-        self.assertEqual(data.get('projects'), projects.values("id", "name", "comment", "created_at", "results_num"))
+        project = Project.objects.get(belong_to=self.user)
+        res = data.get('projects')[0]
+        self.assertEqual(res['id'], project.id)
+        self.assertEqual(res['name'], project.name)
+        self.assertEqual(res['comment'], project.comment)
+        self.assertEqual(res['results_num'], project.recognitionresult_set.count())
         self.assertEqual(data.get('project_num'), 1)
 
     def test_retrieve_project_detail(self):
@@ -58,19 +60,20 @@ class ProjectTestCase(TestCase):
         self.c.post('/ocr/project', {'name': 'project1', 'comment': 'comment1'},
                     content_type="application/json")
 
-        project_id = Project.objects.first().id
-        response = self.c.get('/ocr/project/'+str(project_id), {}, content_type="application/json")
-        data = json.loads(response.content.decode())
         project = Project.objects.first()
-        info = JSONField("时空信息", max_length=500, default={}, blank=True)
-        project.recognitionresult_set.create(name='testresult', comment='resultcomment', result =info)
-        results = project.recognitionresult_set.all()
+        project.recognitionresult_set.create(name='testresult', comment='resultcomment', result ={})
+        result = project.recognitionresult_set.first()
+
+        response = self.c.get('/ocr/project/'+str(project.id), {}, content_type="application/json")
+        data = json.loads(response.content.decode())
 
         self.assertEqual(data.get('name'), project.name)
         self.assertEqual(data.get('comment'), project.comment)
-        self.assertEqual(data.get('created_at'), project.created_at)
         self.assertEqual(data.get('result_num'), project.recognitionresult_set.count())
-        self.assertEqual(data.get('results'), results.values("id", "name", "comment", "created_at"))
+        res = data.get('results')[0]
+        self.assertEqual(res['id'], result.id)
+        self.assertEqual(res['name'], result.name)
+        self.assertEqual(res['comment'], result.comment)
 
     def test_remove_project(self):
         # create project
