@@ -78,12 +78,34 @@ WSGI_APPLICATION = 'nocode_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+POSTGRES_DB = os.environ.get('POSTGRES_DB', 'nocode')
+POSTGRES_USER = os.environ.get('POSTGRES_USER', 'nocode')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'nocode')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', '127.0.0.1')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT', '5432')
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     }
 }
+
+if os.environ.get('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'github_actions',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
