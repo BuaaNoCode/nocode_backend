@@ -16,7 +16,7 @@ jobs:
         python-version: [3.7]
     services:
       postgres:
-        image: postgres:12
+        image: postgres:10
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
