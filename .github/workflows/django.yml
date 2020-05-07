@@ -39,8 +39,8 @@ jobs:
         pip install -r requirements.txt
     - name: Migrations
       run: |
-        python makemigrations
-        python migrate
+        python manage.py makemigrations
+        python manage.py migrate
     - name: Run Tests
       run: |
         python manage.py test --with-coverage --cover-package=ocr,user_manager
