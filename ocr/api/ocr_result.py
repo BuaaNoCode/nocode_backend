@@ -1,5 +1,5 @@
-from enum import Enum
 import json
+from enum import Enum
 
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
@@ -11,8 +11,8 @@ from common.utils import (StatusCode, api_record, failed_api_response,
 from ocr.models.ocr_api_record import OCRApiRecord
 from ocr.models.project import Project
 from ocr.models.recognition_result import RecognitionResult
-from user_manager.interface import auth_required
 from ocr.ocrtool.form_recognizer_layout import form_recognizer_layout
+from user_manager.interface import auth_required
 
 
 class ApiIndex(Enum):
@@ -37,8 +37,6 @@ def receive_ocr_photo(request: HttpRequest, project_id: int):
         return failed_api_response(StatusCode.REFUSE_ACCESS)
     json_text = request.POST.get("json", None)
     img_file = request.FILES.get("file", None)
-    print(json_text)
-    print(img_file)
     load = json.loads(json_text)
     name = load.get("name")
     comment = load.get("comment")

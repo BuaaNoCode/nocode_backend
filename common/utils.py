@@ -81,7 +81,6 @@ def api_record(model: Model, api, user: bool):
                 record = model.objects.get_or_create(api=api.value, user=request.user)[0]
             else:
                 record = model.objects.get_or_create(api=api.value)[0]
-            print(record.call_count)
             record.call_count = record.call_count + 1
             record.save()
             return func(request, *args, **kwargs)
