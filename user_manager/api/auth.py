@@ -40,7 +40,6 @@ def login(request: HttpRequest):
 
     [method]: POST
     """
-    print(request.body)
     data: dict = parse_data(request)
     if not data or data.get("username") is None or data.get("password") is None:
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad login info")
@@ -59,7 +58,6 @@ def verify_jwt_token(request: HttpRequest) -> (bool, StatusCode, str, int):
     status: StatusCode = StatusCode.SUCCESS
     header: str = request.META.get("HTTP_AUTHORIZATION")
     try:
-        print(header)
         if header is None:
             raise jwt.InvalidTokenError
 

@@ -1,11 +1,13 @@
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.test import Client
 import json
-from ocr.models.project import Project
-from ocr.models.recognition_result import RecognitionResult
+
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db.models import Count
+from django.test import Client, TestCase
+
+from ocr.models.project import Project
+from ocr.models.recognition_result import RecognitionResult
+
 
 class ProjectTestCase(TestCase):
     def setUp(self):

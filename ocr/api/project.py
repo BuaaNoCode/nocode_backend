@@ -20,7 +20,7 @@ def create_project(request: HttpRequest, **kwargs):
 
     [method]: POST
     """
-    info: dict = parse_data(request)
+    info:dict = kwargs.get("data")
     name = info.get("name")
     comment = info.get("comment")
 

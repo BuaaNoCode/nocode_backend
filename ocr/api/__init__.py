@@ -1,6 +1,6 @@
 from common.utils import wrapped_api
 
-from .ocr_result import (receieve_ocr_photo, remove_ocr_result,
+from .ocr_result import (receive_ocr_photo, remove_ocr_result,
                          retrieve_ocr_result, update_ocr_result)
 from .project import (create_project, list_projects, remove_project,
                       retrieve_project_detail, update_project)
@@ -11,7 +11,7 @@ PROJECT_API = wrapped_api({
 })
 
 PROJECT_DETAIL_API = wrapped_api({
-    "post": receieve_ocr_photo,
+    "post": receive_ocr_photo,
     "put": update_project,
     "get": retrieve_project_detail,
     "delete": remove_project

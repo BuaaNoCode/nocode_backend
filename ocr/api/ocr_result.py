@@ -16,15 +16,15 @@ from ocr.ocrtool.form_recognizer_layout import form_recognizer_layout
 
 
 class ApiIndex(Enum):
-    RECEIEVE_OCR_PHOTO = 1
+    RECEIVE_OCR_PHOTO = 1
 
 
 @response_wrapper
 @require_http_methods(["POST"])
 @auth_required(User)
-# @api_record(model=OCRApiRecord, api=ApiIndex.RECEIEVE_OCR_PHOTO, user=True)
-def receieve_ocr_photo(request: HttpRequest, project_id: int):
-    """receieve ocr photo and invoke ocr handler
+@api_record(model=OCRApiRecord, api=ApiIndex.RECEIVE_OCR_PHOTO, user=True)
+def receive_ocr_photo(request: HttpRequest, project_id: int):
+    """receive ocr photo and invoke ocr handler
 
     [route]: /ocr/project/<int:project_id>
 
@@ -40,12 +40,12 @@ def receieve_ocr_photo(request: HttpRequest, project_id: int):
     print(json_text)
     print(img_file)
     load = json.loads(json_text)
-    rname = load.get("name")
-    rcomment = load.get("comment")
+    name = load.get("name")
+    comment = load.get("comment")
     result_json = ocr_handler(img_file)
     result: RecognitionResult = RecognitionResult(
-        name = rname,
-        comment = rcomment,
+        name = name,
+        comment = comment,
         belong_to = project,
         result = result_json
     )

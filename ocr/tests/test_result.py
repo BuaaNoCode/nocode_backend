@@ -1,14 +1,16 @@
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.test import Client
 import json
 import os
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+
+from common.consts import VIP
 from ocr.models.project import Project
 from ocr.models.recognition_result import RecognitionResult
-from django.contrib.auth.models import User
-from common.consts import VIP
 
-class ProjectTestCase(TestCase):
+
+class ResultTestCase(TestCase):
     def setUp(self):
         self.c = Client()
         self.UserModel = get_user_model()
@@ -23,28 +25,35 @@ class ProjectTestCase(TestCase):
         # create project
         self.c.post('/ocr/project', {'name': 'project1', 'comment': 'comment1'},
                     content_type="application/json")
+        project = Project.objects.first()
+        # create result
+        RecognitionResult.objects.create(**{
+            "name": "test result",
+            "comment": "test comment",
+            "belong_to": project,
+            "result": {}
+        })
 
         # set files
-        file = './ocr/tests/form.png'
-        payload = {'name': 'result1', 'comment': 'resultcomment1'}
-        self.files = {
-            "json": json.dumps(payload),
-            "file": (os.path.basename(file), open(file, "rb"), "image/png")
-        }
+        # file = './ocr/tests/form.png'
+        # payload = {'name': 'result1', 'comment': 'resultcomment1'}
+        # self.files = {
+        #     "json": json.dumps(payload),
+        #     "file": (os.path.basename(file), open(file, "rb"), "image/png")
+        # }
 
-    def test_receieve_ocr_photo(self):
-        project = Project.objects.first()
-        response = self.c.post('/ocr/project/' + str(project.id), self.files)
-        data = json.loads(response.content.decode())
-        result = project.recognitionresult_set.get(id=data.get('id'))
-        self.assertEqual(result.name, 'result1')
-        self.assertEqual(result.comment, 'resultcomment1')
-        print(result.result)
+    # def test_receive_ocr_photo(self):
+    #     project = Project.objects.first()
+    #     response = self.c.post('/ocr/project/' + str(project.id), self.files)
+    #     data = json.loads(response.content.decode())
+    #     result = project.recognitionresult_set.get(id=data.get('id'))
+    #     self.assertEqual(result.name, 'result1')
+    #     self.assertEqual(result.comment, 'resultcomment1')
 
     def test_retrieve_ocr_result(self):
         # upload photo
         project = Project.objects.first()
-        self.c.post('/ocr/project/' + str(project.id), self.files)
+        # self.c.post('/ocr/project/' + str(project.id), self.files)
 
         result = project.recognitionresult_set.first()
         response = self.c.get('/ocr/project/'+str(project.id)+'/'+str(result.id), {}, content_type="application/json")
@@ -58,7 +67,7 @@ class ProjectTestCase(TestCase):
     def test_update_ocr_result(self):
         # upload photo
         project = Project.objects.first()
-        self.c.post('/ocr/project/' + str(project.id), self.files)
+        # self.c.post('/ocr/project/' + str(project.id), self.files)
 
         result = project.recognitionresult_set.all().first()
         self.c.put('/ocr/project/'+str(project.id)+'/'+str(result.id), {'name': 'result2', 'comment': 'resultcomment2'},
@@ -70,7 +79,7 @@ class ProjectTestCase(TestCase):
     def test_remove_ocr_result(self):
         # upload photo
         project = Project.objects.first()
-        self.c.post('/ocr/project/' + str(project.id), self.files)
+        # self.c.post('/ocr/project/' + str(project.id), self.files)
 
         result = project.recognitionresult_set.all().first()
         self.assertEqual(RecognitionResult.objects.count(), 1)

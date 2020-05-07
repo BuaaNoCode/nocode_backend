@@ -24,7 +24,6 @@ def form_recognizer_layout(source, files, content_type):
         get_url = resp.headers["operation-location"]
     except Exception as e:
         return json.loads(('{"error":{"code":"POSTUnkownError", "message":"'+str(e)+'"}}'))
-    print("post_success")
     n_tries = 10
     n_try = 0
     wait_sec = 6
@@ -45,9 +44,3 @@ def form_recognizer_layout(source, files, content_type):
         except Exception as e:
             return json.loads(('{"error":{"code":"GETUnkownError", "message":"' + str(e) + '"}}'))
     return json.loads(('{"error":{"code":"GETTimeLimitExceeded", "message":"may try later"}}'))
-
-
-# r = form_recognizer_layout(
-#     r"C:\Users\Administrator\Desktop\OCR\OCR_doc\sample_data\Test\Invoice_6.pdf",
-#     'image/jpeg'
-#     )

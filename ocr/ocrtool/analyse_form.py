@@ -6,7 +6,7 @@ from requests import get, post
 def analyse_form(source,model_id,file_type):
 # Endpoint URL
     endpoint = r"https://nocode-form-2.cognitiveservices.azure.com/"
-    apim_key = "your key"
+    apim_key = "d7596252a6f94d778db5897122013465"
     model_id = model_id
     post_url = endpoint + "/formrecognizer/v2.0-preview/custom/models/%s/analyze" % model_id
     source = source
@@ -51,14 +51,5 @@ def analyse_form(source,model_id,file_type):
             wait_sec = min(2*wait_sec, max_wait_sec)
         except Exception as e:
             msg = "GET analyze results failed:\n%s" % str(e)
-            print(msg)
             quit()
     print("Analyze operation did not complete within the allocated time.")
-
-'''
-r = analyse_form(file_type='application/pdf',
-                 model_id='f82e7787-c072-4196-b029-4d1fb7d95829',
-                 source="C:\sample_data\Test\Invoice_6.pdf"
-                 )
-#print('end of analyse form')
-'''

@@ -69,6 +69,7 @@ def parse_data(request: HttpRequest):
 def wrapped_api(api_dict: dict):
     api_dict = {k.upper(): v for k, v in api_dict.items()}
 
+    @require_http_methods(api_dict.keys())
     def api(request, *args, **kwargs):
         return api_dict[request.method](request, *args, **kwargs)
     return api
@@ -77,10 +78,11 @@ def api_record(model: Model, api, user: bool):
     def decorator(func):
         def inner(request, *args, **kwargs):
             if user:
-                record = model.objects.get_or_create(api=api.value, user=request.user)
+                record = model.objects.get_or_create(api=api.value, user=request.user)[0]
             else:
-                record = model.objects.get_or_create(api=api.value)
-            record.count = record.count + 1
+                record = model.objects.get_or_create(api=api.value)[0]
+            print(record.call_count)
+            record.call_count = record.call_count + 1
             record.save()
             return func(request, *args, **kwargs)
         return inner

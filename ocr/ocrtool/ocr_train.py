@@ -18,7 +18,7 @@ def ocr_train(source,useLabelFile,content_type,prefix,includeSubFolders):
     headers = {
         # Request headers
         'Content-Type': content_type,
-        'Ocp-Apim-Subscription-Key': 'your key',#<subscription key>创建表单识别器资源时的订阅密钥。
+        'Ocp-Apim-Subscription-Key': "d7596252a6f94d778db5897122013465",#<subscription key>创建表单识别器资源时的订阅密钥。
     }
 
     body = 	{
@@ -70,15 +70,3 @@ def ocr_train(source,useLabelFile,content_type,prefix,includeSubFolders):
             print(msg)
             quit()
     print("Train operation did not complete within the allocated time.")
-
-'''
-r = ocr_train(
-    source="https://nocode1.blob.core.windows.net/nocodeblob?sp=racwdl&st=2020-04-23T15:40:03Z&se=2020-06-24T15:40:00Z&sv=2019-02-02&sr=c&sig=JCIzp3zbYS9DP%2FavnBYLh5rqB0upg%2BO6SDmmmN3tZMU%3D",
-    useLabelFile=False,
-    content_type="application/pdf",
-    prefix="",
-    includeSubFolders=False
-)
-'''
-#print(r)
-#print('end_of_ocr_train')
