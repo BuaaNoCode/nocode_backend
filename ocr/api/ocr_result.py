@@ -11,7 +11,7 @@ from common.utils import (StatusCode, api_record, failed_api_response,
 from ocr.models.ocr_api_record import OCRApiRecord
 from ocr.models.project import Project
 from ocr.models.recognition_result import RecognitionResult
-from ocr.ocrtool.form_recognizer_layout import form_recognizer_layout
+from ocr.ocrtool.form_recognizer_layout import form_layout_analyze, form_recognizer_layout
 from user_manager.interface import auth_required
 
 
@@ -41,11 +41,15 @@ def receive_ocr_photo(request: HttpRequest, project_id: int):
     name = load.get("name")
     comment = load.get("comment")
     result_json = ocr_handler(img_file)
+    if not result_json.get("error") is None:
+        return failed_api_response(StatusCode.BAD_REQUEST, result_json["error"]["code"])
+    # TODO::
+    layout_analyze_result = form_layout_analyze(result_json)
     result: RecognitionResult = RecognitionResult(
-        name = name,
-        comment = comment,
-        belong_to = project,
-        result = result_json
+        name=name,
+        comment=comment,
+        belong_to=project,
+        result=result_json
     )
     result.save()
     res_data = {
