@@ -52,6 +52,24 @@ curl --header "Content-Type: application/json" \
 }
 ```
 
+#### Error
+
+| code | detailed_code |          description           |
+| :--: | :-----------: | :----------------------------: |
+| 400  |    400_01     | 请求参数错误，缺少用户名或密码 |
+| 401  |    401_01     |        用户名或密码错误        |
+
+#### 其他与登录相关的 Error
+
+#### Error
+
+| code | detailed_code |     description      |
+| :--: | :-----------: | :------------------: |
+| 401  |    401_01     | 请求体错误，无法解析 |
+| 401  |    401_02     |      Token 无效      |
+| 401  |    404_03     |      Token 过期      |
+| 401  |    401_04     |      用户已注销      |
+
 ### `POST /auth/create`
 
 #### Request Body
@@ -69,6 +87,14 @@ curl --header "Content-Type: application/json" \
 | 字段 |  类型   |  描述   |
 | :--: | :-----: | :-----: |
 |  id  | Integer | 用户 ID |
+
+#### Error
+
+| code | detailed_code |               description                |
+| :--: | :-----------: | :--------------------------------------: |
+| 400  |    400_00     |           请求体错误，无法解析           |
+| 400  |    400_01     | 请求参数错误，缺少用户名、密码或邮箱地址 |
+| 409  |    409_00     |                用户名冲突                |
 
 ### `POST /auth/disable`
 
@@ -90,6 +116,15 @@ curl --header "Content-Type: application/json" \
 http://127.0.0.1:8000/auth/disable
 ```
 
+#### Error
+
+| code | detailed_code |          description           |
+| :--: | :-----------: | :----------------------------: |
+| 400  |    400_01     |      请求体错误，无法解析      |
+| 401  |    401_01     | 请求参数错误，缺少用户名或密码 |
+| 404  |    404_00     |          此用户不存在          |
+| 409  |    401_01     |        用户名或密码错误        |
+
 ### `POST /auth/reset`
 
 #### Request Body
@@ -101,3 +136,12 @@ http://127.0.0.1:8000/auth/disable
 |   username   | String | 用户名 |
 |   password   | String |  密码  |
 | new_password | String | 新密码 |
+
+#### Error
+
+| code | detailed_code |               description                |
+| :--: | :-----------: | :--------------------------------------: |
+| 400  |    400_01     |           请求体错误，无法解析           |
+| 401  |    401_01     | 请求参数错误，缺少用户名、旧密码或新密码 |
+| 404  |    404_00     |               此用户不存在               |
+| 409  |    401_01     |             用户名或密码错误             |

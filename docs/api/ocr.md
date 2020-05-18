@@ -43,6 +43,12 @@
 |     id     | Integer  |   项目 ID    |
 | created_at | DateTime | 项目创建时间 |
 
+#### Error
+
+| code | detailed_code | description  |
+| :--: | :-----------: | :----------: |
+| 401  |    401_01     | 请求参数错误 |
+
 ### `PUT /ocr/project/<int:project_id>`
 
 修改项目信息
@@ -53,6 +59,13 @@
 | :-----: | :----: | :------------: |
 |  name   | String |  可选，项目名  |
 | comment | String | 可选，项目描述 |
+
+#### Error
+
+| code | detailed_code |     description      |
+| :--: | :-----------: | :------------------: |
+| 404  |    404_00     | 找不到相应的 project |
+| 401  |    401_01     |     请求参数错误     |
 
 ### `GET /ocr/project`
 
@@ -98,9 +111,21 @@ results 字段元素内容
 |  comment   |  String  | 识别结果描述 |
 | created_at | DateTime |   创建时间   |
 
+#### Error
+
+| code | detailed_code |                   description                   |
+| :--: | :-----------: | :---------------------------------------------: |
+| 403  |    403_00     | 尝试访问不存在的 project 或不属于自己的 project |
+
 ### `DELETE /ocr/project/<int:project_id>`
 
 删除项目
+
+#### Error
+
+| code | detailed_code |                   description                   |
+| :--: | :-----------: | :---------------------------------------------: |
+| 403  |    403_00     | 尝试访问不存在的 project 或不属于自己的 project |
 
 ### `POST /ocr/project/<int:project_id>`
 
@@ -139,6 +164,12 @@ requests.post(url, files=files)
 |     id     | Integer  | 识别结果 ID |
 | created_at | DateTime |  创建时间   |
 
+#### Error
+
+| code | detailed_code |                   description                   |
+| :--: | :-----------: | :---------------------------------------------: |
+| 403  |    403_00     | 尝试访问不存在的 project 或不属于自己的 project |
+
 ### `GET /ocr/project/<int:project_id>/<int:result_id>`
 
 获取识别结果
@@ -152,6 +183,13 @@ requests.post(url, files=files)
 | comment | String  | 识别结果描述 |
 | result  |  JSON   |   识别结果   |
 
+#### Error
+
+| code | detailed_code |                   description                   |
+| :--: | :-----------: | :---------------------------------------------: |
+| 403  |    403_00     | 尝试访问不存在的 project 或不属于自己的 project |
+| 404  |    404_00     |              不存在相应的识别结果               |
+
 ### `PUT /ocr/project/<int:project_id>/<int:result_id>`
 
 修改识别结果信息
@@ -161,6 +199,21 @@ requests.post(url, files=files)
 |  name   | String |  可选，识别结果名  |
 | comment | String | 可选，识别结果描述 |
 
+#### Error
+
+| code | detailed_code |                   description                   |
+| :--: | :-----------: | :---------------------------------------------: |
+| 403  |    403_00     | 尝试访问不存在的 project 或不属于自己的 project |
+| 400  |    400_01     |                  请求参数错误                   |
+| 404  |    404_00     |              不存在相应的识别结果               |
+
 ### `DELETE /ocr/project/<int:project_id>/<int:result_id>`
 
 删除识别结果
+
+#### Error
+
+| code | detailed_code |                   description                   |
+| :--: | :-----------: | :---------------------------------------------: |
+| 403  |    403_00     | 尝试访问不存在的 project 或不属于自己的 project |
+| 404  |    404_00     |              不存在相应的识别结果               |
