@@ -49,4 +49,7 @@ python manage.py runserver
 ## API Docs
 
 [user management](./docs/api/auth.md)
+
 [OCR module](./docs/api/ocr.md)
+
+[HTTP Status](./docs/api/status.md)
