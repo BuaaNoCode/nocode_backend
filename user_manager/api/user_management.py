@@ -1,13 +1,38 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
-from user_manager.api.auth import auth_required
 from common.consts import StatusCode, User
-from common.utils import (failed_api_response, parse_data, response_wrapper,
-                          success_api_response)
+from common.utils import (failed_api_response, parse_data, random_str,
+                          response_wrapper, success_api_response)
+from user_manager.api.auth import auth_required
+from user_manager.forms.email import VerifiedEmail
+from user_manager.forms.user import VerifiedUserForm
 
 UserModel = get_user_model()
+
+
+@response_wrapper
+@require_http_methods(["POST"])
+def send_captcha(request: HttpRequest):
+    """create captcha before registration or reset password
+
+    [route]: /auth/captcha
+
+    [method]: POST
+    """
+    email_info: dict = parse_data(request)
+    if not email_info:
+        return failed_api_response(StatusCode.BAD_REQUEST, "Bad request")
+    email = email_info.get("email")
+    verified_form = VerifiedEmail({"email": email})
+    if not verified_form.is_valid():
+        return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad email address")
+    captcha = random_str(6)
+    cache.set(email, captcha, 5 * 60)
+    # TODO:: Send Email
+    return success_api_response({"result": "Ok, confirmation email has been sent"})
 
 
 @response_wrapper
@@ -25,8 +50,19 @@ def create_user(request: HttpRequest):
     username = user_info.get("username")
     password = user_info.get("password")
     email = user_info.get("email")
-    if username is None or password is None or email is None:
-        return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad user information")
+    captcha = user_info.get("captcha")
+    verified_form = VerifiedUserForm({
+        "username": username,
+        "password": password,
+        "email": email,
+        "captcha": captcha
+    })
+    if not verified_form.is_valid():
+        return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad information")
+    verified_captcha = cache.get(email)
+    delattr(cache, email)
+    if captcha != verified_captcha:
+        return failed_api_response(StatusCode.INVALID_CAPTCHA, "Captcha not matched")
     if UserModel.objects.filter(username=username).exists():
         return failed_api_response(StatusCode.ITEM_ALREADY_EXISTS, "Username conflicted")
 
@@ -97,3 +133,40 @@ def reset_password(request: HttpRequest):
     user.save()
 
     return success_api_response({"result": "Ok, password has been updated."})
+
+
+@response_wrapper
+@require_http_methods(["POST"])
+def forgot_password(request: HttpRequest):
+    """forgot password and reset
+
+    [route]: /auth/forgot
+
+    [method]: POST
+    """
+    user_info: dict = parse_data(request)
+    if not user_info:
+        return failed_api_response(StatusCode.BAD_REQUEST, "Bad request")
+    username = user_info.get("username")
+    password = user_info.get("password")
+    email = user_info.get("email")
+    captcha = user_info.get("captcha")
+    verified_form = VerifiedUserForm({
+        "username": username,
+        "password": password,
+        "email": email,
+        "captcha": captcha
+    })
+    if not verified_form.is_valid():
+        return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad information")
+    verified_captcha = cache.get(email)
+    delattr(cache, email)
+    if captcha != verified_captcha:
+        return failed_api_response(StatusCode.INVALID_CAPTCHA, "Captcha not matched")
+    user = UserModel.objects.filter(username=username).first()
+    if not user or user.email != email:
+        return failed_api_response(StatusCode.ITEM_NOT_FOUND, "User not found")
+    user.set_password(password)
+    user.save()
+
+    return success_api_response({"result": "Ok, password reset"})
