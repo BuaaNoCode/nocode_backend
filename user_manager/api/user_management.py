@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.mail import send_mail
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
@@ -31,7 +33,12 @@ def send_captcha(request: HttpRequest):
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad email address")
     captcha = random_str(6)
     cache.set(email, captcha, 5 * 60)
-    # TODO:: Send Email
+    send_mail(
+        "Nocode 验证",
+        "验证码："+captcha+"\n该验证码在五分钟内有效",
+        settings.EMAIL_HOST_USER,
+        [email],
+    )
     return success_api_response({"result": "Ok, confirmation email has been sent"})
 
 
