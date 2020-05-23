@@ -16,6 +16,7 @@ class StatusCode(Enum):
     # Bad Request Family
     BAD_REQUEST = 400_00
     INVALID_REQUEST_ARGUMENT = 400_01
+    INVALID_CAPTCHA = 400_02
 
     # Unauthorized Family
     UNAUTHORIZED = 401_00
