@@ -11,7 +11,7 @@ from common.utils import (StatusCode, api_record, failed_api_response,
 from ocr.models.ocr_api_record import OCRApiRecord
 from ocr.models.project import Project
 from ocr.models.recognition_result import RecognitionResult
-from ocr.ocrtool.form_recognizer_layout import form_recognizer_layout
+from ocr.ocrtool.azure import azure_form_recognizer_layout
 from user_manager.interface import auth_required
 
 
@@ -40,12 +40,12 @@ def receive_ocr_photo(request: HttpRequest, project_id: int):
     load = json.loads(json_text)
     name = load.get("name")
     comment = load.get("comment")
-    result_json = ocr_handler(img_file)
+    result_json = azure_ocr_handler(img_file)
     result: RecognitionResult = RecognitionResult(
-        name = name,
-        comment = comment,
-        belong_to = project,
-        result = result_json
+        name=name,
+        comment=comment,
+        belong_to=project,
+        result=result_json
     )
     result.save()
     res_data = {
@@ -55,10 +55,9 @@ def receive_ocr_photo(request: HttpRequest, project_id: int):
     return success_api_response(res_data)
 
 
-def ocr_handler(img_file):
-    source = ""
-    r_json = form_recognizer_layout(source, img_file, img_file.content_type)
-    return r_json
+def azure_ocr_handler(img_file):
+    return azure_form_recognizer_layout(img_file, img_file.content_type)
+
 
 
 @response_wrapper

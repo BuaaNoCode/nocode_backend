@@ -1,24 +1,20 @@
-########### Python Form Recognizer Async Layout #############
 import json
 import time
+
 from requests import get, post
 
-def form_recognizer_layout(source, files, content_type):
-    # Endpoint URL
+
+def azure_form_recognizer_layout(files, content_type):
     endpoint = r" https://nocode-form-2.cognitiveservices.azure.com"
     apim_key = "d7596252a6f94d778db5897122013465"
     post_url = endpoint + "/formrecognizer/v2.0-preview/Layout/analyze"
     headers = {
-        # Request headers
         'Content-Type': content_type,
         'Ocp-Apim-Subscription-Key': apim_key,
     }
-    if headers['Content-Type'] == 'application/json':
-        data_bytes = {"source": source}
-    else:
-        data_bytes = files.read()
+    data_bytes = files.read()
     try:
-        resp = post(url = post_url, data = data_bytes, headers = headers)
+        resp = post(url=post_url, data=data_bytes, headers=headers)
         if resp.status_code != 202:
             return json.loads(resp.text)
         get_url = resp.headers["operation-location"]
@@ -29,7 +25,7 @@ def form_recognizer_layout(source, files, content_type):
     wait_sec = 6
     while n_try < n_tries:
         try:
-            resp = get(url = get_url, headers = {"Ocp-Apim-Subscription-Key": apim_key})
+            resp = get(url=get_url, headers={"Ocp-Apim-Subscription-Key": apim_key})
             resp_json = json.loads(resp.text)
             if resp.status_code != 200:
                 return resp_json
@@ -38,7 +34,6 @@ def form_recognizer_layout(source, files, content_type):
                 return resp_json
             if status == "failed":
                 return json.loads('{"error":{"code":"AnalysisFailed", "message":"Can\'t analyze"}}')
-            # Analysis still running. Wait and retry.
             time.sleep(wait_sec)
             n_try += 1
         except Exception as e:
