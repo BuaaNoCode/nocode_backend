@@ -18,8 +18,6 @@ _tencent_credential_1 = settings.TENCENT_CREDENTIAL_1
 _tencent_credential_2 = settings.TENCENT_CREDENTIAL_2
 
 
-_tencent_bucket_secret_id = 'AKIDpUV2IH8SespWx7CF6i3LMOAft190bwFT'
-_tencent_bucket_secret_key = '6wV5PUaTBftdBUXSBi02sWv47uTnqhNn'
 _region = 'ap-beijing'
 _token = None
 _scheme = 'https'

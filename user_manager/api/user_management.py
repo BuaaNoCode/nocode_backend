@@ -67,7 +67,7 @@ def create_user(request: HttpRequest):
     if not verified_form.is_valid():
         return failed_api_response(StatusCode.INVALID_REQUEST_ARGUMENT, "Bad information")
     verified_captcha = cache.get(email)
-    delattr(cache, email)
+    cache.delete(email)
     if captcha != verified_captcha:
         return failed_api_response(StatusCode.INVALID_CAPTCHA, "Captcha not matched")
     if UserModel.objects.filter(username=username).exists():
