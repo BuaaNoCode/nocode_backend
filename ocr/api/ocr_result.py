@@ -12,6 +12,8 @@ from ocr.models.ocr_api_record import OCRApiRecord
 from ocr.models.project import Project
 from ocr.models.recognition_result import *
 from ocr.ocrtool.azure import azure_form_recognizer_layout
+from ocr.ocrtool.baidu import analyseFormForBaidu
+from ocr.ocrtool.tencent import tencent_ocr_handler
 from user_manager.interface import auth_required
 
 
@@ -55,7 +57,6 @@ def receive_ocr_photo(request: HttpRequest, project_id: int):
     return success_api_response(res_data)
 
 
-
 @response_wrapper
 @require_http_methods(["POST"])
 @auth_required(User)
@@ -80,7 +81,7 @@ def handle_ocr_photo(request: HttpRequest, project_id: int, result_id: int):
     img_file = request.FILES.get("file", None)
     if img_file is None:
         return failed_api_response(StatusCode.NO_IMAGE_FILE)
-    
+
     result_string = ""
     status = True
     ocr_type = result.ocr_type
@@ -90,18 +91,22 @@ def handle_ocr_photo(request: HttpRequest, project_id: int, result_id: int):
         status, result_string = baidu_handler(img_file)
     elif ocr_type == OCR_TENCENT:
         status, result_string = tencent_handler(img_file)
-    
+
     result.result = result_string
 
 
 def azure_ocr_handler(img_file):
-    return json.dumps(azure_form_recognizer_layout(img_file, img_file.content_type))
+    status, resp_json = azure_form_recognizer_layout(img_file, img_file.content_type)
+    return status, json.dumps(resp_json)
+
 
 def baidu_handler(img_file):
-    pass
+    return analyseFormForBaidu(img_file, "json")
+
 
 def tencent_handler(img_file):
-    pass
+    return tencent_ocr_handler(img_file)
+
 
 @response_wrapper
 @require_http_methods(["POST"])
