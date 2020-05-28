@@ -10,7 +10,7 @@ from common.utils import (StatusCode, api_record, failed_api_response,
                           validate_data)
 from ocr.models.ocr_api_record import OCRApiRecord
 from ocr.models.project import Project
-from ocr.models.recognition_result import RecognitionResult
+from ocr.models.recognition_result import *
 from ocr.ocrtool.azure import azure_form_recognizer_layout
 from user_manager.interface import auth_required
 
@@ -55,9 +55,90 @@ def receive_ocr_photo(request: HttpRequest, project_id: int):
     return success_api_response(res_data)
 
 
-def azure_ocr_handler(img_file):
-    return azure_form_recognizer_layout(img_file, img_file.content_type)
 
+@response_wrapper
+@require_http_methods(["POST"])
+@auth_required(User)
+def handle_ocr_photo(request: HttpRequest, project_id: int, result_id: int):
+    """receive ocr request and invoke ocr handler
+
+    [route]: /ocr/project/<int:project_id>/<int:result_id>
+
+    [method]: POST
+    """
+    user = request.user
+    project: Project = Project.objects.filter(
+        id=project_id).filter(belong_to=user).first()
+    if not project:
+        return failed_api_response(StatusCode.REFUSE_ACCESS)
+
+    result: RecognitionResult = project.recognitionresult_set.filter(
+        id=result_id).first()
+    if not result:
+        return failed_api_response(StatusCode.ITEM_NOT_FOUND)
+
+    img_file = request.FILES.get("file", None)
+    if img_file is None:
+        return failed_api_response(StatusCode.NO_IMAGE_FILE)
+    
+    result_string = ""
+    status = True
+    ocr_type = result.ocr_type
+    if ocr_type == OCR_AZURE:
+        status, result_string = azure_ocr_handler(img_file)
+    elif ocr_type == OCR_BAIDU:
+        status, result_string = baidu_handler(img_file)
+    elif ocr_type == OCR_TENCENT:
+        status, result_string = tencent_handler(img_file)
+    
+    result.result = result_string
+
+
+def azure_ocr_handler(img_file):
+    return json.dumps(azure_form_recognizer_layout(img_file, img_file.content_type))
+
+def baidu_handler(img_file):
+    pass
+
+def tencent_handler(img_file):
+    pass
+
+@response_wrapper
+@require_http_methods(["POST"])
+@auth_required(User)
+@validate_data(fields=["name", "comment", "ocr_type"])
+def create_ocr_result(request: HttpRequest, project_id: int, **kwargs):
+    """create ocr result before uploading photo
+
+    [route]: /ocr/project/<int:project_id>
+
+    [method]: POST
+    """
+    user = request.user
+    project: Project = Project.objects.filter(
+        id=project_id).filter(belong_to=user).first()
+    if not project:
+        return failed_api_response(StatusCode.REFUSE_ACCESS)
+    info: dict = kwargs.get("data")
+    name = info.get("name", "")
+    comment = info.get("comment", "")
+    ocr_type = info.get("ocr_type")
+
+    if ocr_type is None or not isinstance(ocr_type, int) or not OCR_NONE_BOTTOM < ocr_type < OCR_NONE_TOP:
+        return failed_api_response(StatusCode.BAD_OCR_TYPE)
+
+    result: RecognitionResult = RecognitionResult(
+        name=name,
+        comment=comment,
+        ocr_type=ocr_type,
+        belong_to=user
+    )
+    result.save()
+
+    return success_api_response({
+        "id": result.id,
+        "created_at": result.created_at
+    })
 
 
 @response_wrapper

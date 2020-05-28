@@ -1,12 +1,14 @@
 import base64
 import time
 
+from django.conf import settings
 import requests
 
 
+_access_token_url = r"{}".format(settings.BAIDU_ACCESS_TOKEN)
+
 def getAccessToken():
-    url = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=ARGj65txXijAg8pDCqOBa2Vt&client_secret=Xgaiuk39aeZoD0ubmW8Skrui5jDzlAU7'
-    response = requests.get(url)
+    response = requests.get(_access_token_url)
     acc_token = response.json()['access_token']
     return acc_token
 
@@ -26,11 +28,11 @@ def ocr_get_result(acc_token, request_id, url, result_type):
         response_json = response.json()
         print(response_json)
         if not response_json.get("result"):
-            return {"error": {"code": "AnalysisFailed", "message": "Analysis failed"}}
+            return False, {"error": {"code": "AnalysisFailed", "message": "Analysis failed"}}
         if response_json["result"]["ret_code"] == 3:
-            return response.json()
+            return True, response.json()
         time.sleep(wait_sec)
-    return {"error": {"code": "AnalysisFailed", "message": "Analysis not finished in time"}}
+    return False, {"error": {"code": "AnalysisFailed", "message": "Analysis not finished in time"}}
 
 
 def analyseFormForBaidu(file, result_type):
